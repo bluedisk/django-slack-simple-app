@@ -4,12 +4,12 @@ import json
 from time import time
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, JsonResponse, HttpResponseNotAllowed
-from django.utils.decorators import method_decorator
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from . import slack_events
+
+__import__(settings.SLACK_EVENTS)
 
 
 class SlackEventView(View):
@@ -47,7 +47,7 @@ class SlackEventView(View):
             slack_events.emit(event_type, event_data)
             return HttpResponse()
 
-        return HttpResponseNotAllowed()
+        return HttpResponseForbidden()
 
     @staticmethod
     def verify_signature(request, timestamp, signature):
