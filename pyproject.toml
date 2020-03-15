@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "papago_slack"
+name = "django-slack-app"
 version = "0.1.0"
-description = "Slack bot for papago"
-authors = ["Matthew, Lee <matthew@angelswing.io>"]
+description = "nice toolkit for Slack app(bot)"
+authors = ["Matthew, Lee <bluedisk@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
