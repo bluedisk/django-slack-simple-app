@@ -117,5 +117,7 @@ STATIC_URL = '/static/'
 
 SLACK_EVENT_URL = 'events'  # same with default
 SLACK_OAUTH_URL = 'oauth/'  # same with default
+
 SLACK_EVENTS = "my_slack_App.slack_events"
-SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
+raise NotImplemented  # remove this after fillout the secret
+SLACK_SIGNING_SECRET = "04f5ddeba34fc74122b2021313e0664ba1d"
