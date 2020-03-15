@@ -61,3 +61,11 @@ class SlackEventView(View):
         ).hexdigest()
 
         return hmac.compare_digest(request_hash, signature)
+
+
+class SlackOAuthView(View):
+    def get(self, request, *args, **kwargs):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        pass

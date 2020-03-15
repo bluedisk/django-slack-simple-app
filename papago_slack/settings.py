@@ -115,5 +115,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+SLACK_OAUTH_REDIRECT = 'oauth/'
 SLACK_EVENTS = "papago_slack.slack_events"
 SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")

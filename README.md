@@ -1,5 +1,24 @@
 # django-slack-app
 
+## Intro
+Yet another django slack app(bot) package!
+
+core part of this project has based 
+on the [slackapi/python-slackclient](https://github.com/slackapi/python-slackclient)
+and [slackapi/python-slack-events-api](https://github.com/slackapi/python-slack-events-api)
+that is the official slack api packages.
+
+## Features (TODO)
+
+[x] OAuth Redirect handling (response checking & update token DB)
+[ ] Interactive Component
+[ ] Slach Command
+[x] Event Subscription 
+
+### And... we're not gonna support:
+- Incoming Webhook
+- Classic App and RTM
+
 ## install
 
 1. install package
@@ -62,3 +81,14 @@ def message_channels(event_data):
 ```
 
 now, you can get the events!
+
+
+## FAQ
+### What is diffrent between this and others?
+other libraries are:
+- hard to use
+- not integrated with django
+- includes unnessesary dependancies(like a flask)
+- not support OAuth 
+- or Deveolper have to manage the OAuth tokens
+- NOT SUPPORT EVENT SUBSCRIPTION ** most important reasone **
