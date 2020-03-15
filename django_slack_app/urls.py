@@ -7,9 +7,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .views import SlackEventView, SlackOAuthView
 
-oauth_url = getattr(settings, "SLACK_OAUTH_REDIRECT",  "oauth/")
+event_url = getattr(settings, "SLACK_EVENT_URL", "events")
+oauth_url = getattr(settings, "SLACK_OAUTH_URL",  "oauth")
 
 urlpatterns = [
-    path('', csrf_exempt(SlackEventView.as_view())),
-    path(oauth_url, SlackOAuthView.as_view())
+    path(event_url, csrf_exempt(SlackEventView.as_view())),
+    path(oauth_url, csrf_exempt(SlackOAuthView.as_view()))
 ]
