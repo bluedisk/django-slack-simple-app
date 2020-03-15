@@ -115,9 +115,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+
+############################
+# Slack App Configuration
+
 SLACK_EVENT_URL = 'events'  # same with default
-SLACK_OAUTH_URL = 'oauth/'  # same with default
+SLACK_OAUTH_URL = 'oauth'  # same with default
+
+# SLACK_AFTER_OAUTH = "/oauth/complete"  # view name to show after oauth finished
 
 SLACK_EVENTS = "my_slack_App.slack_events"
-raise NotImplemented  # remove this after fillout the secret
-SLACK_SIGNING_SECRET = "04f5ddeba34fc74122b2021313e0664ba1d"
+
+SLACK_SIGNING_SECRET = ""
+
+SLACK_APP_TOKEN = ""
+SLACK_CLIENT_ID = ""
+SLACK_CLIENT_SECRET = ""
