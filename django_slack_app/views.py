@@ -1,18 +1,17 @@
-import hashlib
-import hmac
 import json
 from pprint import pprint
-from time import time
 
 import slack
 from aiohttp.http_exceptions import HttpBadRequest
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import View
-from slack.errors import SlackApiError
+from django.views.decorators.csrf import csrf_exempt
 
-from . import slack_events
+from . import slack_events, slack_commands
+from .decorators import verify_slack_request
 from .models import SlackUserToken
 
 __import__(settings.SLACK_EVENTS)
@@ -23,27 +22,35 @@ if not hasattr(settings, "SLACK_APP_TOKEN") or \
     raise NotImplemented("You must enter the slack app settings")
 
 
-class SlackEventView(View):
-    """Slack Event View for handling Slack Event Call which was subscribed"""
+@method_decorator(csrf_exempt, name='dispatch')
+class SlackCommandView(View):
 
-    # If a GET request is made, return 404.
+    @method_decorator(verify_slack_request)
+    def post(self, request, *args, **kwargs):
+        command = request.POST.get("command", "")
+        slack_commands.emit(command, request.POST)
+
+        # parsing and checking for the sub-command
+        subcommand = request.POST.get("text", "").split()[0].lower()
+        if subcommand:
+            full_command = ".".join([command, subcommand])
+
+            if slack_commands.listeners(full_command):
+                slack_commands.emit(full_command, request.POST)
+
+        return HttpResponse()
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SlackEventView(View):
+
     def get(self, request, *args, **kwargs):
+        # If a GET request is made, return 404.
         return HttpResponseNotFound("It's working but not for you!")
 
+    @method_decorator(verify_slack_request)
     def post(self, request, *args, **kwargs):
-        # Each request comes with request timestamp and request signature
-        # emit an error if the timestamp is out of range
-        req_timestamp = request.headers.get('X-Slack-Request-Timestamp')
-        if abs(time() - int(req_timestamp)) > 60 * 5:
-            slack_events.emit('error', 'Invalid request timestamp')
-            return HttpResponseForbidden()
-
-        # Verify the request signature using the app's signing secret
-        # emit an error if the signature can't be verified
-        req_signature = request.headers.get('X-Slack-Signature')
-        if not self.verify_signature(request, req_timestamp, req_signature):
-            slack_events.emit('error', 'Invalid request signature')
-            return HttpResponseForbidden()
+        """Slack Event View for handling Slack Event Call which was subscribed"""
 
         # Parse the request payload into JSON
         event_data = json.loads(request.body.decode('utf-8'))
@@ -60,25 +67,10 @@ class SlackEventView(View):
 
         return HttpResponseForbidden()
 
-    @staticmethod
-    def verify_signature(request, timestamp, signature):
-        # Verify the request signature of the request sent from Slack
-        # Generate a new hash using the app's signing secret and request data
-
-        req = str.encode('v0:' + str(timestamp) + ':') + request.body
-        request_hash = 'v0=' + hmac.new(
-            str.encode(settings.SLACK_SIGNING_SECRET),
-            req, hashlib.sha256
-        ).hexdigest()
-
-        return hmac.compare_digest(request_hash, signature)
-
 
 class SlackOAuthView(View):
-    client = slack.WebClient()
 
     def get(self, request, *args, **kwargs):
-
         if "code" not in request.GET:
             raise HttpBadRequest("Wrong code")
 
@@ -89,8 +81,9 @@ class SlackOAuthView(View):
         }
 
         try:
-            response = self.client.oauth_v2_access(**payload)
-        except SlackApiError as e:
+            client = slack.WebClient()
+            response = client.oauth_v2_access(**payload)
+        except slack.errors.SlackApiError as e:
             raise HttpBadRequest("Invalid code")
 
         if not response["ok"]:

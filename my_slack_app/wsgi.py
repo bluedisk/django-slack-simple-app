@@ -1,5 +1,5 @@
 """
-WSGI config for papago_slack project.
+WSGI config for my_slack_app project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'papago_slack.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'my_slack_app.settings')
 
 application = get_wsgi_application()

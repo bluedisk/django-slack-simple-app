@@ -13,7 +13,7 @@ that is the official slack API packages.
 
 - [x] [WIP] OAuth Redirect handling (response verifying & token DB managing)
 - [ ] Interactive Component
-- [ ] Slach Command
+- [x] Slach Command
 - [x] Event Subscription 
 
 ### And... we're not gonna support:
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django_slack_app'  # add here!
 
     ...
-    'my_slack_app'
+    'my_slack_app'  # your app
 ]
 
 ```
@@ -45,11 +45,12 @@ INSTALLED_APPS = [
 And
 ```python
  
-SLACK_EVENT_URL = 'events'  # same with default
-SLACK_OAUTH_URL = 'oauth'  # same with default
+SLACK_EVENT_URL = 'events'  # default
+SLACK_OAUTH_URL = 'oauth'  # default
+SLACK_COMMAND_URL = 'commands'  # default
 
-SLACK_EVENTS = "my_slack_app.slack_events"
-SLACK_SIGNING_SECRET = "SOMENICESECRETCODE"
+SLACK_EVENTS = "my_slack_app.slack_events"  # the module that you want to handle the event
+SLACK_SIGNING_SECRET = "SOMENICESECRETCODE"  # your slack-app's secret
 
 ```
 
@@ -72,6 +73,7 @@ In this case,
 
 
 4. implement event handler
+see the link for the details https://api.slack.com/events-api
 
 **my_slack_app/slack_events.py**
 ```python
@@ -92,6 +94,48 @@ def message_channels(event_data):
 
 now, you can get slack events!
 
+
+5. implement slash command
+
+you need to add slash-command and set the endpoint for that on the slack app setting before start to impelement it.
+
+see the link for the detail about the slash-command https://api.slack.com/interactivity/slash-commands
+
+**my_slack_app/slack_events.py**
+```python
+from django_slack_app import slack_events, slack_commands
+
+...
+
+
+@slack_commands.on("/myapp")
+def my_command(event_data):
+    print(f"Command {event_data['command']} has received")
+
+
+# if you want to get the sub-command, enter the sub-command with comma after the command name
+@slack_commands.on("/myapp.subcommand")
+def my_command(event_data):
+    print(f"Command {event_data['command']} has received")
+
+```
+
+typical slash command has the following data:
+```json
+{
+    'channel_id': 'CF86ZSRHS',
+    'channel_name': 'some channel',
+    'command': '/myapp',
+    'response_url': 'https://hooks.slack.com/commands/TFGXQ1P37/1021528680361/g7Mda8uCjrP8WO13AsVbSFHj',
+    'team_domain': 'my-team',
+    'team_id': 'TFGXQ1P37',
+    'text': 'subcommand 123',
+    'token': 'tbkAVWYc43VzWkavB5nK0v5Mh',
+    'trigger_id': '1033087519408.526847057041.0cdd28da169b45ecfcb1ee783f5d22fb',
+    'user_id': 'U3FG14FK',
+    'user_name': 'myuserid'
+}
+```
 
 ## FAQ
 ### What is the difference between this and others?
