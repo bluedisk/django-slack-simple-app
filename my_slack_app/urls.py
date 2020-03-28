@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('slack/', include("django_slack_app.urls")),
+    path('slack/', include("django_simple_slack_app.urls")),
 ]

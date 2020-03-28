@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "django-slack-app"
+name = "django-simple-slack-app"
 version = "0.1.0"
-description = "nice toolkit for Slack app(bot)"
+description = "nice toolkit for Slack app(bot) that support Event API & OAuth"
 authors = ["Matthew, Lee <bluedisk@gmail.com>"]
 
 [tool.poetry.dependencies]

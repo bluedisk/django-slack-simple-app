@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from . import slack_events, slack_commands
 from .decorators import verify_slack_request
-from .models import SlackUserToken
+from .models import SlackUser
 
 __import__(settings.SLACK_EVENTS)
 
@@ -61,7 +61,18 @@ class SlackEventView(View):
 
         # Parse the Event payload and emit the event to the event listener
         if "event" in event_data:
-            event_type = event_data["event"]["type"]
+            event = event_data['event']
+            event_type = event["type"]
+
+            try:
+                token = SlackUser.objects.get(user=event['user'])
+                client = slack.WebClient(token=token.token)
+
+                event['user'] = token
+                event['client'] = client
+            except SlackUser.DoesNotExist:
+                pass
+
             slack_events.emit(event_type, event_data)
             return HttpResponse()
 
@@ -94,7 +105,7 @@ class SlackOAuthView(View):
         authed_user = response["authed_user"]
         team = response["team"]
 
-        token, _ = SlackUserToken.objects.update_or_create(
+        token, _ = SlackUser.objects.update_or_create(
             user=authed_user["id"],
             defaults={
                 "token": authed_user["access_token"],

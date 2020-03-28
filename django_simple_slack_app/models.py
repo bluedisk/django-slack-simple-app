@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-class SlackUserToken(models.Model):
+class SlackUser(models.Model):
     user = models.CharField("Slack User ID", max_length=1024, primary_key=True, null=False)
     token = models.CharField("User Access Token", max_length=1024, unique=True, null=False)
 

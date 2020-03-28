@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'django_slack_app'
+    'django_simple_slack_app'
 ]
 
 MIDDLEWARE = [
@@ -123,7 +123,7 @@ SLACK_OAUTH_URL = 'oauth'  # same with default
 
 # SLACK_AFTER_OAUTH = "/oauth/complete"  # view name to show after oauth finished
 
-SLACK_EVENTS = "my_slack_App.slack_events"
+SLACK_EVENTS = "my_slack_app.slack_events"
 
 SLACK_SIGNING_SECRET = ""
 

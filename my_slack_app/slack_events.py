@@ -1,6 +1,9 @@
+from pprint import pprint
+
 import slack
 
-from django_slack_app import slack_events, slack_commands
+from django_simple_slack_app import slack_events, slack_commands
+from django_simple_slack_app.models import SlackUser
 
 SLACK_BOT_USER_TOKEN = "??"
 client = slack.WebClient(token=SLACK_BOT_USER_TOKEN)
@@ -14,8 +17,16 @@ def reaction_added(event_data):
 
 @slack_events.on("message")
 def message_channels(event_data):
-    msg = event_data["event"]["text"]
+    event = event_data['event']
+    msg = event["text"]
     print(f"New message: {msg}")
+
+    # if user has authorized, the event has a SlackUser object and slack WebClient for the token
+    if isinstance(event['user'], SlackUser):
+        print(f"Authorized user!")
+        pprint(event['user'])
+
+        event['client'].chat_postMessage(channel=event['channel'], text="I said, " + msg)
 
 
 @slack_commands.on("/myapp")
