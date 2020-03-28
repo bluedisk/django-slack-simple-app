@@ -62,7 +62,7 @@ SLACK_SIGNING_SECRET = "SOMENICESECRETCODE"  # your slack-app's secret
 
 ```
 
-```SLACK_OAUTH_URL``` and ```SLACK_OAUTH_URL``` in the above code are a same with default url. so, you can skip it. I just write it to show you the default URL explicitly.
+```SLACK_EVENT_URL```, ```SLACK_OAUTH_URL``` and ```SLACK_COMMAND_URL``` in the above code are a same with default url. so, you can skip it. I just write it to show you the default URL explicitly.
 
 ### 3. add route to the django-slack-app
 ```python
