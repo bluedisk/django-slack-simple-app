@@ -20,6 +20,7 @@ that is the official slack API packages.
 
 - [x] OAuth Redirect handling (response verifying & token DB managing)
 - [ ] Interactive Component
+- [ ] Custom SlackUser model support
 - [x] Slach Command
 - [x] Event Subscription 
 
@@ -176,17 +177,17 @@ def my_command(event_data):
 typical slash command has the following data:
 ```json
 {
-    'channel_id': 'CF86ZSRHS',
-    'channel_name': 'some channel',
-    'command': '/myapp',
-    'response_url': 'https://hooks.slack.com/commands/TFGXQ1P37/1021528680361/g7Mda8uCjrP8WO13AsVbSFHj',
-    'team_domain': 'my-team',
-    'team_id': 'TFGXQ1P37',
-    'text': 'subcommand 123',
-    'token': 'tbkAVWYc43VzWkavB5nK0v5Mh',
-    'trigger_id': '1033087519408.526847057041.0cdd28da169b45ecfcb1ee783f5d22fb',
-    'user_id': 'U3FG14FK',
-    'user_name': 'myuserid'
+    "channel_id": "CF86ZSRHS",
+    "channel_name": "some channel",
+    "command": "/myapp",
+    "response_url": "https://hooks.slack.com/commands/TFGXQ1P37/1021528680361/g7Mda8uCjrP8WO13AsVbSFHj",
+    "team_domain": "my-team",
+    "team_id": "TFGXQ1P37",
+    "text": "subcommand 123",
+    "token": "tbkAVWYc43VzWkavB5nK0v5Mh",
+    "trigger_id": "1033087519408.526847057041.0cdd28da169b45ecfcb1ee783f5d22fb",
+    "user_id": "U3FG14FK",
+    "user_name": "myuserid"
 }
 ```
 
