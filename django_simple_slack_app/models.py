@@ -2,7 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 
-class SlackUser(models.Model):
+class AbstractSlackUser(models.Model):
+    class Meta:
+        abstract = True
+
     user = models.CharField("Slack User ID", max_length=1024, primary_key=True, null=False)
     token = models.CharField("User Access Token", max_length=1024, unique=True, null=False)
 
@@ -13,3 +16,7 @@ class SlackUser(models.Model):
 
     def __str__(self):
         return self.user
+
+
+class SlackUser(AbstractSlackUser):
+    pass

@@ -20,7 +20,7 @@ that is the official slack API packages.
 
 - [x] OAuth Redirect handling (response verifying & token DB managing)
 - [ ] Interactive Component
-- [ ] Custom SlackUser model support
+- [x] Custom SlackUser model support
 - [x] Slach Command
 - [x] Event Subscription 
 

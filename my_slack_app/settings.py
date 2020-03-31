@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'my_slack_app',
+
     'django_simple_slack_app'
 ]
 
@@ -120,8 +122,10 @@ STATIC_URL = '/static/'
 
 SLACK_EVENT_URL = 'events'  # same with default
 SLACK_OAUTH_URL = 'oauth'  # same with default
+SLACK_COMMAND_URL = 'commands'  # same with default
 
 # SLACK_AFTER_OAUTH = "/oauth/complete"  # view name to show after oauth finished
+SLACK_USER_MODEL = "my_slack_app.models.MySlackUser"
 
 SLACK_EVENTS = "my_slack_app.slack_events"
 
