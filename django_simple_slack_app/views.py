@@ -1,8 +1,11 @@
 import json
+from collections.abc import Iterable
+from pprint import pprint
+
+import requests
 import slack
 import slack.errors
 from aiohttp.http_exceptions import HttpBadRequest
-from collections.abc import Iterable
 from django.conf import settings
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, HttpResponseRedirect, \
@@ -12,7 +15,6 @@ from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from pprint import pprint
 
 from . import slack_events, slack_commands
 from .decorators import verify_slack_request
@@ -25,7 +27,7 @@ for handler in settings.SLACK_HANDLER:
     __import__(handler)
 
 if not hasattr(settings, "SLACK_APP_TOKEN") or \
-        not hasattr(settings, "SLACK_APP_USER_TOKEN") or \
+        not hasattr(settings, "SLACK_APP_BOT_TOKEN") or \
         not hasattr(settings, "SLACK_CLIENT_ID") or \
         not hasattr(settings, "SLACK_CLIENT_SECRET"):
     raise NotImplemented("You must enter the slack app settings")
@@ -35,12 +37,12 @@ class SlackCommandResponse:
     def __init__(self, url):
         self.url = url
 
-    def ephemeral(self, payload):
-        payload.update({"response_type": "ephemeral"})
+    def ephemeral(self, text):
+        payload = {"text": text, "response_type": "ephemeral"}
         return requests.post(self.url, json=payload)
 
-    def in_channel(self, payload):
-        payload.update({"response_type": "in_channel"})
+    def in_channel(self, text):
+        payload = {"text": text, "response_type": "in_channel"}
         return requests.post(self.url, json=payload)
 
 
@@ -52,15 +54,15 @@ class SlackCommandView(View):
         command = request.POST.get("command", "")
         event_data = request.POST.copy()
 
+        slack_user = None
         try:
             slack_user = SlackUser.objects.get(id=event_data['user_id'])
-            slack_user.set_channel(event_data['event']['channel'])
             slack_user.update_info()
             event_data['user'] = slack_user
         except SlackUser.DoesNotExist:
             pass
 
-        slack_commands.emit(command, event_data)
+        slack_commands.emit(command, event_data, slack_user, SlackCommandResponse(event_data['response_url']))
 
         # parsing and checking for the sub-command
         subcommand = request.POST.get("text", "").split()
@@ -99,10 +101,11 @@ class SlackEventView(View):
             event = event_data['event']
             event_type = event["type"]
 
+            slack_user = None
             if 'user' in event:
                 try:
                     slack_user = SlackUser.objects.get(id=event['user'])
-                    slack_user.set_channel(event['channel'])
+                    slack_user.set_default_channel(event['channel'])
                     slack_user.update_info()
 
                     event['user'] = slack_user
@@ -150,16 +153,17 @@ class SlackOAuthView(View):
             })
         team.update_info()
 
-        user, _ = SlackUser.objects.update_or_create(
-            id=authed_user["id"],
-            defaults={
-                "token": authed_user["access_token"],
-                "team": team
-            }
-        )
-        user.update_info()
+        if "access_token" in authed_user:
+            user, _ = SlackUser.objects.update_or_create(
+                id=authed_user["id"],
+                defaults={
+                    "token": authed_user["access_token"],
+                    "team": team
+                }
+            )
+            user.update_info()
 
-        slack_events.emit("oauth", user)
+            slack_events.emit("oauth", user)
 
         if hasattr(settings, "SLACK_AFTER_OAUTH") and settings.SLACK_AFTER_OAUTH:
             return HttpResponseRedirect(settings.SLACK_AFTER_OAUTH)

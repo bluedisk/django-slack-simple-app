@@ -32,7 +32,7 @@ class SlackCacheManager:
         key = f"slack:{info_type}:{id}"
         info = cache.get(key)
         if not info:
-            client = slack.WebClient(token=settings.SLACK_APP_USER_TOKEN)
+            client = slack.WebClient(token=settings.SLACK_APP_BOT_TOKEN)
             try:
                 if info_type == 'user':
                     info = client.users_profile_get(user=id).data.get('profile')
