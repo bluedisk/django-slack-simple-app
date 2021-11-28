@@ -21,8 +21,9 @@ that is the official slack API packages.
 - [x] OAuth Redirect handling (response verifying & token DB managing)
 - [ ] Interactive Component
 - [x] Custom SlackUser model support
-- [x] Slach Command
+- [x] Slack Command
 - [x] Event Subscription 
+- [x] Auto retrieve Slack user info & caching 
 
 ### And... we're not gonna support:
 - Incoming Webhook
@@ -92,13 +93,15 @@ from django_simple_slack_app import slack_events
 
 
 @slack_events.on("reaction_added")
-def reaction_added(event_data):
+def reaction_added(event_data, user):
     emoji = event_data["event"]["reaction"]
     print(f"New reaction: {emoji}")
+    
+    user.post_message(text=f"nice {emoji} reaction!")
 
 
 @slack_events.on("message")
-def message_channels(event_data):
+def message_channels(event_data, user):
     msg = event_data["event"]["text"]
     print(f"New message: {msg}")
 ```
@@ -163,14 +166,19 @@ from django_simple_slack_app import slack_events, slack_commands
 
 
 @slack_commands.on("/myapp")
-def my_command(event_data):
+def my_command(event_data, user, response):
     print(f"Command {event_data['command']} has received")
-
+    response.ephemeral({
+        "text": f"{user.name} send slash-command"
+    })
 
 # if you want to get the sub-command, enter the sub-command with comma after the command name
 @slack_commands.on("/myapp.subcommand")
-def my_command(event_data):
+def my_command(event_data, user, response):
     print(f"Command {event_data['command']} has received")
+    response.in_channel({
+        "text": f"{user.name} send slash-sub-command"
+    })
 
 ```
 

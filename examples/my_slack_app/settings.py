@@ -24,7 +24,7 @@ SECRET_KEY = 'dtqbt@1)@b9)ub&bfe3_ksl^y7f4i#8dv$yn$452dri!l45c@%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["slack.eggpang.net", ]
+ALLOWED_HOSTS = ["slack.eggpang.net",
 
 # Application definition
 
@@ -126,11 +126,14 @@ SLACK_COMMAND_URL = 'commands'  # same with default
 
 # SLACK_AFTER_OAUTH = "/oauth/complete"  # view name to show after oauth finished
 SLACK_USER_MODEL = "my_slack_app.models.MySlackUser"
+# SLACK_TEAM_MODEL = "" # using default model "django_simple_slack_app.models.SlackTeam"
 
-SLACK_EVENTS = "my_slack_app.slack_events"
+# SLACK_HANDLER = "my_slack_app.slack_all_in_one"
+SLACK_HANDLER = ["my_slack_app.slack_commands", "my_slack_app.slack_events"]
 
 SLACK_SIGNING_SECRET = ""
 
 SLACK_APP_TOKEN = ""
+SLACK_APP_USER_TOKEN = ""
 SLACK_CLIENT_ID = ""
 SLACK_CLIENT_SECRET = ""
