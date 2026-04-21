@@ -1,3 +1,5 @@
+# 🚨 [DEPRECATE] Use the Slack Bolt: https://github.com/slackapi/bolt-python
+
 # django-simple-slack-app
 
 ## Intro
